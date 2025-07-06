@@ -22,7 +22,7 @@ def generate_launch_description():
         # Add the parameter file argument
         param_file_arg,
 
-        # Node Launcher for sector detection
+        #Node Launcher for sector detection
         # Node(
         #     package='launcher_pkg',
         #     executable='mk_node_launcher',

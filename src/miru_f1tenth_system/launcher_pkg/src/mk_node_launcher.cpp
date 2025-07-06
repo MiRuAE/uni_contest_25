@@ -7,28 +7,35 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "ackermann_msgs/msg/ackermann_drive_stamped.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "visualization_msgs/msg/marker.hpp"
+
 
 class NodeLauncher : public rclcpp::Node {
 public:
     NodeLauncher() : Node("mk_node_launcher") 
     {
         subscription_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
-            lidarscan_topic, 10, std::bind(&NodeLauncher::lidar_callback, this, std::placeholders::_1));
+            "/scan", 10, std::bind(&NodeLauncher::lidar_callback, this, std::placeholders::_1));
         
         // Publisher for current mission information
         sector_publisher_ = this->create_publisher<std_msgs::msg::String>("current_mission", 10);
         
         // Initialize current_sector as empty to ensure first publish
         current_sector = "";
+
+        marker_pub_ = this->create_publisher<visualization_msgs::msg::Marker>("mission_markers", 10);
         
         // Initialize as MISSION_A
         publish_sector("MISSION_A");
     }
 
 private:
-    std::string lidarscan_topic = "/scan";
+    // std::string lidarscan_topic = "/scan";
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr subscription_;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr sector_publisher_;
+    rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr marker_pub_;
+    int marker_id_counter = 0;
+
     double scan_threshold = 3.0;
     int left_min_index = -1;
     int right_min_index = -1;
@@ -38,7 +45,7 @@ private:
     bool in_b_sector = false;  // Track if we're currently in B sector
     bool in_c_sector = false;  // Track if we're currently in C sector
     int b_sector_count = 0;    // Counter to ensure stable B sector detection
-    int required_b_sector_count = 5;  // Number of consecutive B sector detections required
+    int required_b_sector_count = 1;  // Number of consecutive B sector detections required
     std::string current_sector = "";
 
     std::vector<float> preprocess_lidar(std::vector<float>& ranges)
@@ -175,6 +182,29 @@ private:
         }
     }
 
+    void publish_marker(double x, double y, const std::string& frame_id, const std::string& label, float r, float g, float b) {
+        visualization_msgs::msg::Marker marker;
+        marker.header.frame_id = frame_id;
+        marker.header.stamp = this->now();
+        marker.ns = "sector_marker";
+        marker.id = marker_id_counter++;
+        marker.type = visualization_msgs::msg::Marker::SPHERE;
+        marker.action = visualization_msgs::msg::Marker::ADD;
+        marker.pose.position.x = x;
+        marker.pose.position.y = y;
+        marker.pose.position.z = 0.1;
+        marker.pose.orientation.w = 1.0;
+        marker.scale.x = 0.1;
+        marker.scale.y = 0.1;
+        marker.scale.z = 0.1;
+        marker.color.a = 1.0;
+        marker.color.r = r;
+        marker.color.g = g;
+        marker.color.b = b;
+
+        marker_pub_->publish(marker);
+    }
+
     void lidar_callback(const sensor_msgs::msg::LaserScan::SharedPtr scan_msg) 
     {
         if (scan_msg->ranges.empty()) {
@@ -200,6 +230,12 @@ private:
                     std::abs(angle_difference - angle_180_threshold) < (10.0 * (M_PI / 180.0))) {
                     in_b_sector = true;
                     publish_sector("MISSION_B");
+                    // 가장 가까운 지점 기준 x, y 계산
+                    double angle = scan_msg->angle_min + left_min_index * scan_msg->angle_increment;
+                    double r = scan_msg->ranges[left_min_index];
+                    double x = r * std::cos(angle);
+                    double y = r * std::sin(angle);
+                    publish_marker(x, y, scan_msg->header.frame_id, "B", 0.0, 0.0, 1.0);
                     RCLCPP_INFO(this->get_logger(), "Entered B sector - walls detected with %f degree separation", 
                               angle_difference * (180.0 / M_PI));
                 }
@@ -218,6 +254,11 @@ private:
                     in_b_sector = false;
                     in_c_sector = true;
                     publish_sector("MISSION_C");
+                    double angle = scan_msg->angle_min + lidar_center * scan_msg->angle_increment;
+                    double r = scan_msg->ranges[lidar_center];
+                    double x = r * std::cos(angle);
+                    double y = r * std::sin(angle);
+                    publish_marker(x, y, scan_msg->header.frame_id, "C", 1.0, 0.0, 0.0);
                     RCLCPP_INFO(this->get_logger(), "Transitioned from B sector to C sector - walls lost with %f degree separation", 
                               angle_difference * (180.0 / M_PI));
                 }

@@ -30,19 +30,19 @@ class OdomNavigationNode : public rclcpp::Node
             "current_mission", 10, std::bind(&OdomNavigationNode::mission_callback, this, std::placeholders::_1));
 
         // 기존 목표 좌표 및 속도 관련 파라미터
-        this->declare_parameter<double>("target_x", 1.0);
-        this->declare_parameter<double>("target_y", 1.5);
+        this->declare_parameter<double>("target_x", 2.00);
+        this->declare_parameter<double>("target_y", -1.40);
         this->declare_parameter<double>("goal_tolerance", 0.05);
 
         // Servo 관련 파라미터 (조향각 제한 계산용)
-        this->declare_parameter<double>("servo_min", 0.3175);
-        this->declare_parameter<double>("servo_max", 0.8405);
-        this->declare_parameter<double>("steering_angle_to_servo_gain", -1.2135);
-        this->declare_parameter<double>("steering_angle_to_servo_offset", 0.5650);
+        this->declare_parameter<double>("servo_min", 0.1018);
+        this->declare_parameter<double>("servo_max", 0.8218);
+        this->declare_parameter<double>("steering_angle_to_servo_gain", -0.9);
+        this->declare_parameter<double>("steering_angle_to_servo_offset", 0.4618);
 
         // Pure Pursuit 관련 파라미터
         this->declare_parameter<double>("lookahead_distance", 0.5); // Lookahead 거리 (미터)
-        this->declare_parameter<double>("wheelbase", 0.32);         // 차량 휠베이스 (미터)
+        this->declare_parameter<double>("wheelbase", 0.33);         // 차량 휠베이스 (미터)
 
         // Steering 제어 PID 파라미터
         this->declare_parameter<double>("kp_pid", 0.0);
