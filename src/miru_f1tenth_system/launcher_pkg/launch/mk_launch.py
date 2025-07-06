@@ -10,6 +10,24 @@ def generate_launch_description():
     # Get the path to the parameter file
     f1tenth_stack_dir = get_package_share_directory('f1tenth_stack')
     default_param_file = os.path.join(f1tenth_stack_dir, 'config', 'vesc.yaml')
+    
+    camera_config = os.path.join(
+        get_package_share_directory('camera_basic_pkg'),
+        'config',
+        'lane_following.yaml'
+    )
+
+    lidar_config = os.path.join(
+        get_package_share_directory('gap_follow'),
+        'config',
+        'reactive_node.yaml'
+    )
+
+    odom_navigation_config = os.path.join(
+        get_package_share_directory('odom_navigation'),
+        'config',
+        'odom_navigation.yaml'
+    )
 
     # Declare the parameter file argument
     param_file_arg = DeclareLaunchArgument(
@@ -41,22 +59,30 @@ def generate_launch_description():
             package='camera_basic_pkg',
             executable='lanefollowing',
             name='lane_following_node',
-            output='screen'
+            output='screen',
+            parameters=[camera_config]
         ),
-        
-        # Reactive Follow Gap Node for LiDAR-based driving
         # Node(
-        #     package='gap_follow',
-        #     executable='reactive_node',
-        #     name='reactive_node',
+        #     package='camera_basic_pkg',
+        #     executable='lanefollowing_intel',
+        #     name='lane_following_node',
         #     output='screen'
         # ),
+        
+        # Reactive Follow Gap Node for LiDAR-based driving
         Node(
-            package='rust_ws',
-            executable='mission_gap',
-            name='mission_gap',
-            output='screen'
+            package='gap_follow',
+            executable='reactive_node',
+            name='reactive_node',
+            output='screen',
+            parameters=[lidar_config]
         ),
+        # Node(
+        #     package='rust_ws',
+        #     executable='mission_gap',
+        #     name='mission_gap',
+        #     output='screen'
+        # ),
         
         # VESC to Odom Node with EKF (as a component)
         ComposableNodeContainer(
@@ -68,7 +94,7 @@ def generate_launch_description():
                 ComposableNode(
                     package='odom_publisher',
                     plugin='vesc_ackermann::VescToOdomWithEKF',
-                    name='vesc_to_odom_with_ekf_node',
+                    name='vesc_to_odom_node',
                     parameters=[LaunchConfiguration('param_file')]
                 )
             ],
@@ -80,6 +106,7 @@ def generate_launch_description():
             package='odom_navigation',
             executable='odom_navigation_node',
             name='odom_navigation_node',
-            output='screen'
+            output='screen',
+            parameters=[odom_navigation_config]
         )
     ]) 

@@ -29,66 +29,39 @@ class OdomNavigationNode : public rclcpp::Node
         mission_sub_ = this->create_subscription<std_msgs::msg::String>(
             "current_mission", 10, std::bind(&OdomNavigationNode::mission_callback, this, std::placeholders::_1));
 
-        // 기존 목표 좌표 및 속도 관련 파라미터
-        this->declare_parameter<double>("target_x", 2.00);
-        this->declare_parameter<double>("target_y", -1.40);
-        this->declare_parameter<double>("goal_tolerance", 0.05);
+        // 기존 목표 좌표 및 속도 관련 파라미터 및 값 초기화
+        target_x_ = this->declare_parameter<double>("target_x", 2.00);
+        target_y_ = this->declare_parameter<double>("target_y", -1.40);
+        goal_tolerance_ = this->declare_parameter<double>("goal_tolerance", 0.05);
 
         // Servo 관련 파라미터 (조향각 제한 계산용)
-        this->declare_parameter<double>("servo_min", 0.1018);
-        this->declare_parameter<double>("servo_max", 0.8218);
-        this->declare_parameter<double>("steering_angle_to_servo_gain", -0.9);
-        this->declare_parameter<double>("steering_angle_to_servo_offset", 0.4618);
-
-        // Pure Pursuit 관련 파라미터
-        this->declare_parameter<double>("lookahead_distance", 0.5); // Lookahead 거리 (미터)
-        this->declare_parameter<double>("wheelbase", 0.33);         // 차량 휠베이스 (미터)
-
-        // Steering 제어 PID 파라미터
-        this->declare_parameter<double>("kp_pid", 0.0);
-        this->declare_parameter<double>("ki_pid", 0.0);
-        this->declare_parameter<double>("kd_pid", 0.0);
-
-        // 속도 제어 PID 파라미터 및 감속 구간 설정
-        this->declare_parameter<double>("kp_speed_pid", 0.5);
-        this->declare_parameter<double>("ki_speed_pid", 0.0);
-        this->declare_parameter<double>("kd_speed_pid", 0.0);
-        // 목표와 가까워졌을 때 감속을 위한 거리 (미터)
-        this->declare_parameter<double>("decel_distance", 0.5);
-
-        // 최소/최대 속도 값
-        this->declare_parameter<double>("max_speed", 2.5);
-        this->declare_parameter<double>("min_speed", 0.5);
-
-        // 파라미터 값 초기화
-        target_x_ = this->get_parameter("target_x").as_double();
-        target_y_ = this->get_parameter("target_y").as_double();
-        goal_tolerance_ = this->get_parameter("goal_tolerance").as_double();
-
-        lookahead_distance_ = this->get_parameter("lookahead_distance").as_double();
-        wheelbase_ = this->get_parameter("wheelbase").as_double();
-
-        kp_pid_ = this->get_parameter("kp_pid").as_double();
-        ki_pid_ = this->get_parameter("ki_pid").as_double();
-        kd_pid_ = this->get_parameter("kd_pid").as_double();
-
-        kp_speed_pid_ = this->get_parameter("kp_speed_pid").as_double();
-        ki_speed_pid_ = this->get_parameter("ki_speed_pid").as_double();
-        kd_speed_pid_ = this->get_parameter("kd_speed_pid").as_double();
-        decel_distance_ = this->get_parameter("decel_distance").as_double();
-
-        max_speed_ = this->get_parameter("max_speed").as_double();
-        min_speed_ = this->get_parameter("min_speed").as_double();
-
-        // Servo 파라미터를 이용해 조향각 제한 계산 (라디안 단위)
-        double servo_min = this->get_parameter("servo_min").as_double();
-        double servo_max = this->get_parameter("servo_max").as_double();
-        double steering_gain = this->get_parameter("steering_angle_to_servo_gain").as_double();
-        double steering_offset = this->get_parameter("steering_angle_to_servo_offset").as_double();
+        double servo_min = this->declare_parameter<double>("servo_min", 0.1018);
+        double servo_max = this->declare_parameter<double>("servo_max", 0.8218);
+        double steering_gain = this->declare_parameter<double>("steering_angle_to_servo_gain", -0.9);
+        double steering_offset = this->declare_parameter<double>("steering_angle_to_servo_offset", 0.4618);
         max_steer_angle_ = (servo_min - steering_offset) / steering_gain; // 예: 약 0.2039 rad
         min_steer_angle_ = (servo_max - steering_offset) / steering_gain; // 예: 약 -0.2272 rad
         RCLCPP_INFO(this->get_logger(), "Computed max steer angle: %f rad, min steer angle: %f rad", max_steer_angle_,
                     min_steer_angle_);
+
+        // Pure Pursuit 관련 파라미터
+        lookahead_distance_ = this->declare_parameter<double>("lookahead_distance", 0.5); // Lookahead 거리 (미터)
+        wheelbase_ = this->declare_parameter<double>("wheelbase", 0.33);         // 차량 휠베이스 (미터)
+
+        // Steering 제어 PID 파라미터
+        kp_pid_ = this->declare_parameter<double>("kp_pid", 0.0);
+        ki_pid_ = this->declare_parameter<double>("ki_pid", 0.0);
+        kd_pid_ = this->declare_parameter<double>("kd_pid", 0.0);
+
+        // 속도 제어 PID 파라미터 및 감속 구간 설정
+        kp_speed_pid_ = this->declare_parameter<double>("kp_speed_pid", 0.5);
+        ki_speed_pid_ = this->declare_parameter<double>("ki_speed_pid", 0.0);
+        kd_speed_pid_ = this->declare_parameter<double>("kd_speed_pid", 0.0);
+        decel_distance_ = this->declare_parameter<double>("decel_distance", 0.5);
+
+        // 최소/최대 속도 값
+        max_speed_ = this->declare_parameter<double>("max_speed", 2.5);
+        min_speed_ = this->declare_parameter<double>("min_speed", 0.5);
 
         RCLCPP_INFO(this->get_logger(), "No target set. Waiting for user input...");
 

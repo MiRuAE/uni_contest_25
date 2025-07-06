@@ -1,0 +1,20 @@
+odom_navigation_node:
+  ros__parameters:
+    target_x: 2.00
+    target_y: -1.40
+    goal_tolerance: 0.05
+    servo_min: 0.1018
+    servo_max: 0.8218
+    steering_angle_to_servo_gain: -0.9
+    steering_angle_to_servo_offset: 0.4618
+    lookahead_distance: 0.5
+    wheelbase: 0.33
+    kp_pid: 0.0
+    ki_pid: 0.0
+    kd_pid: 0.0
+    kp_speed_pid: 0.5
+    ki_speed_pid: 0.0
+    kd_speed_pid: 0.0
+    decel_distance: 0.5
+    max_speed: 2.5
+    min_speed: 0.5

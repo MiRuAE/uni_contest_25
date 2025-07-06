@@ -22,7 +22,14 @@ class ReactiveFollowGap : public rclcpp::Node {
 public:
     ReactiveFollowGap() : Node("reactive_node"), is_active_(false)
     {
-        double servo_min = this->declare_parameter<double>("servo_min", 0.0);
+        car_width_ = this->declare_parameter("car_width", 0.5);
+        safe_distance_ = this->declare_parameter("safe_distance", car_width_ * 0.5);
+        max_bubble_points_ = this->declare_parameter("max_bubble_points", 850);
+
+        left_wing_ = this->declare_parameter("left_wing_angle", M_PI / 2.7);
+        right_wing_ = this->declare_parameter("right_wing_angle", -M_PI / 2.7);
+
+        window_size_ = this->declare_parameter("smooth_filter_window", 9);
         
         // Mission state subscriber
         mission_sub_ = this->create_subscription<std_msgs::msg::String>(
@@ -60,10 +67,14 @@ private:
 
 
     int data_size = 0;
-    double left_wing = M_PI / 2.7;
-    double right_wing = -(M_PI / 2.7);
     int left_wing_index = 0;
     int right_wing_index = 0;
+
+    // Parameter member variables
+    double car_width_, safe_distance_;
+    int max_bubble_points_;
+    double left_wing_, right_wing_;
+    int window_size_;
 
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr mission_sub_;
     bool is_active_;
@@ -126,7 +137,7 @@ private:
         }
         // --------------- Fine Tuning Threshold ---------------- //
 
-        int window_size = 9;
+        int window_size = window_size_;
         int padding = window_size / 2;
         data_size = static_cast<int>(ranges.size());
 
@@ -296,10 +307,9 @@ private:
         }
 
         // Eliminate all points inside 'bubble' (set them to zero) 
-        double car_width = 0.5;
-        double car_radius = car_width;
+        double car_radius = car_width_;
         int bubble_point = (car_radius / min_range) / scan_msg->angle_increment;
-        int bubble_point_num = std::min(bubble_point, 850);
+        int bubble_point_num = std::min(bubble_point, max_bubble_points_);
         /*RCLCPP_INFO(this->get_logger(), "Bubble_Point_num: %d", bubble_point_num);*/
 
         // Find max length gap 
@@ -374,10 +384,10 @@ private:
         /*} else { // 매우 급한 커브*/
         /* drive_speed = 0.2;*/
         /*}*/
-        double safe_dist = car_width * 0.5;
+        double safe_dist = safe_distance_;
         
-        left_wing_index = (left_wing - scan_msg->angle_min) / scan_msg->angle_increment;
-        right_wing_index = (right_wing - scan_msg->angle_min) / scan_msg->angle_increment;
+        left_wing_index = (left_wing_ - scan_msg->angle_min) / scan_msg->angle_increment;
+        right_wing_index = (right_wing_ - scan_msg->angle_min) / scan_msg->angle_increment;
 
         // Only publish drive command if in sector B
         if (is_active_) {

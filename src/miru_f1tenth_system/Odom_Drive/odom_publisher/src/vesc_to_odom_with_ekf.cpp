@@ -307,11 +307,11 @@ public:
     base_frame_ = declare_parameter("base_frame", "base_link");
     speed_to_erpm_gain_ = declare_parameter("speed_to_erpm_gain", 0.0);
     speed_to_erpm_offset_ = declare_parameter("speed_to_erpm_offset", 0.0);
-    wheelbase_ = declare_parameter("wheelbase", 0.32);
+    wheelbase_ = declare_parameter("wheelbase", 0.33);
     steering_to_servo_gain_ = declare_parameter("steering_angle_to_servo_gain", 0.0);
     steering_to_servo_offset_ = declare_parameter("steering_angle_to_servo_offset", 0.0);
-
     use_servo_cmd_ = declare_parameter("use_servo_cmd_to_calc_angular_velocity", true);
+    imu_offset_ = declare_parameter("imu_y_offset", 0.15);
 
     odom_pub_ = create_publisher<odom_msgs::msg::MyOdom>("my_odom", 10);
     vesc_state_sub_ = create_subscription<vesc_msgs::msg::VescStateStamped>(
@@ -369,7 +369,7 @@ private:
     double measured_yaw_rad = measured_yaw_deg * M_PI / 180.0;
     
     imu_yaw_rate = -imu->imu.angular_velocity.z * M_PI / 180;
-    real_yaw_rate = imu_yaw_rate * (1 - 0.15 / 0.32);
+    real_yaw_rate = imu_yaw_rate * (1 - imu_offset_ / wheelbase_);
 
     if (std::isnan(initial_yaw_)) {
       initial_yaw_ = measured_yaw_rad;
@@ -409,6 +409,7 @@ private:
   double wheelbase_;
   double steering_to_servo_gain_;
   double steering_to_servo_offset_;
+  double imu_offset_;
 
   bool use_servo_cmd_;
   std::shared_ptr<std_msgs::msg::Float64> last_servo_cmd_;

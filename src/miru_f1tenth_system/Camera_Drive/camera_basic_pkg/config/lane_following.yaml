@@ -1,0 +1,25 @@
+lane_following_node:
+  ros__parameters:
+      camera_index: 0
+      Kp: 0.005
+      Ki: 0.0
+      Kd: 0.0
+      gaus_blur_size: 5
+      thresh: 100
+      blockSize: 11
+      C: 10
+      canny_inf: 50
+      canny_sup: 150
+      hough_threshold: 50
+      hough_inf_pixel: 50
+      hough_pixel_gap: 10
+      slope_threshold: 0.3
+      camera_frame_width: 640
+      camera_frame_height: 360
+      camera_fps: 30
+      camera_exposure: 1
+      camera_brightness: 128
+      speed_sigmoid_k: 1.0
+      speed_sigmoid_x0: 3.0
+      speed_base: 1.5
+      speed_reduction: 0.9

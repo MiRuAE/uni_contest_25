@@ -49,6 +49,7 @@ install(TARGETS
   disparity_node
   DESTINATION lib/${PROJECT_NAME})
 
+
 # Install Python modules
 ament_python_install_package(${PROJECT_NAME})
 
@@ -56,6 +57,11 @@ ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   scripts/reactive_node.py
   DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install config files (e.g., YAML)
+install(DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)

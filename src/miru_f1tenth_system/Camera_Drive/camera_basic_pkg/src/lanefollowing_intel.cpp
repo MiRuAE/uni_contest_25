@@ -109,9 +109,11 @@ private:
         int w=frame.cols, h=frame.rows;
 
         // Preprocess
+        // ROI: 하단 1/4 영역만 처리
+        cv::Rect roi_rect(0, h * 3 / 4, w, h / 4);
         cv::Mat gray;
-        cv::cvtColor(frame(cv::Rect(0,h/3,w,h/2)), gray, cv::COLOR_BGR2GRAY);
-        cv::GaussianBlur(gray, gray, cv::Size(gaus_blur_size,gaus_blur_size),0);
+        cv::cvtColor(frame(roi_rect), gray, cv::COLOR_BGR2GRAY);
+        cv::GaussianBlur(gray, gray, cv::Size(gaus_blur_size, gaus_blur_size), 0);
         cv::Mat bin;
         cv::adaptiveThreshold(gray, bin, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, blockSize, C);
         cv::Mat edges;
@@ -133,7 +135,7 @@ private:
         double Ld=hypot(lookahead_x,ly);
         double alpha=atan2(ly,lookahead_x);
         double steering=atan2(2*wheel_base*sin(alpha),Ld);
-       
+        // 속도 제어 시히 
         double avg_slope = (std::abs(sL) + std::abs(sR)) / 2.0;
         double speed = speed_control(avg_slope);
 

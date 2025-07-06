@@ -35,10 +35,21 @@ add_executable(lanefollowing src/lanefollowing.cpp)
 target_include_directories(lanefollowing PUBLIC ${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME})
 ament_target_dependencies(lanefollowing rclcpp cv_bridge sensor_msgs geometry_msgs OpenCV ackermann_msgs visualization_msgs nav_msgs)
 
+#Build
+add_executable(lanefollowing_intel src/lanefollowing_intel.cpp)
+target_include_directories(lanefollowing_intel PUBLIC ${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME})
+ament_target_dependencies(lanefollowing_intel rclcpp cv_bridge sensor_msgs geometry_msgs OpenCV ackermann_msgs visualization_msgs nav_msgs)
+
 #Install
 install(TARGETS
   lanefollowing
+  lanefollowing_intel
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)

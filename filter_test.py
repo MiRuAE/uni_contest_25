@@ -7,11 +7,13 @@ def process_frame():
         print("카메라를 열 수 없습니다.")
         return
     
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 180)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     cap.set(cv2.CAP_PROP_FPS, 30)
     cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
     cap.set(cv2.CAP_PROP_BRIGHTNESS, 128)
+    cap.set(cv2.CAP_PROP_EXPOSURE, 1)
+    
     
     blockSize = 501
     C = -20
