@@ -11,8 +11,16 @@ def generate_launch_description():
     f1tenth_stack_dir = get_package_share_directory('f1tenth_stack')
     default_param_file = os.path.join(f1tenth_stack_dir, 'config', 'vesc.yaml')
     
+    # Without learning Camera
+    # camera_config = os.path.join(
+    #     get_package_share_directory('camera_basic_pkg'),
+    #     'config',
+    #     'lane_following.yaml'
+    # )
+
+    # With learning
     camera_config = os.path.join(
-        get_package_share_directory('camera_basic_pkg'),
+        get_package_share_directory('lane_mission_pkg'),
         'config',
         'lane_following.yaml'
     )
@@ -55,10 +63,19 @@ def generate_launch_description():
         ),
         
         # Lane Following Node for camera-based driving
+        # Node(
+        #     package='camera_basic_pkg',
+        #     executable='lanefollowing',
+        #     name='lane_following_node',
+        #     output='screen',
+        #     parameters=[camera_config]
+        # ),
+
+        # Lane following with learning
         Node(
-            package='camera_basic_pkg',
-            executable='lanefollowing',
-            name='lane_following_node',
+            package='lane_mission_pkg',
+            executable='lane_mission_node',
+            name='lane_mission_node',
             output='screen',
             parameters=[camera_config]
         ),

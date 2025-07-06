@@ -217,7 +217,8 @@ class LaneNode(Node):
         self.declare_parameters(
             namespace="",
             parameters=[
-                ("model_path", "/home/shchon11/programming/lane_ws/src/lane_pkg/model/best.pt"),
+                # ("model_path", "/home/shchon11/programming/lane_ws/src/lane_pkg/model/best.pt"),
+                ("model_path", "/home/miru2/Programming/chachaping_ws/src/miru_f1tenth_system/Camera_Drive/lane_mission_pkg/model/best.pt"),
                 ("camera_index", 0),
                 ("frame_width", 640),
                 ("frame_height", 360),
@@ -320,7 +321,7 @@ class LaneNode(Node):
         self.integral = 0.0
         self.prev_error = 0.0
         
-        self.is_active = False
+        self.is_active = True
     # ------------------------------------------------------        
     def mission_callback(self, msg: String):
         self.is_active = (msg.data == "MISSION_A")
