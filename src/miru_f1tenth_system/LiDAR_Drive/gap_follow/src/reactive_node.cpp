@@ -346,11 +346,11 @@ private:
 
         //-------------------- Test Mode -----------------//
         if (steering_degree <= 5.0) { // 거의 직진
-            drive_speed = 2.0;
+            drive_speed = 1.7;
         } else if (steering_degree <= 10.0) { // 약간의 커브
-            drive_speed = 1.5;
+            drive_speed = 1.3;
         } else if (steering_degree <= 15.0) { // 완만한 커브
-            drive_speed = 1.2;
+            drive_speed = 1.1;
         } else { // 중간 커브
             drive_speed = 0.8;
         }

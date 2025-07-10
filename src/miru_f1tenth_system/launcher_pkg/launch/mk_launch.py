@@ -49,18 +49,18 @@ def generate_launch_description():
         param_file_arg,
 
         #Node Launcher for sector detection
-        # Node(
-        #     package='launcher_pkg',
-        #     executable='mk_node_launcher',
-        #     name='mk_node_launcher',
-        #     output='screen'
-        # ),
         Node(
-            package='rust_ws',
-            executable='mission_launcher',
-            name='mission_launcher',
+            package='launcher_pkg',
+            executable='mk_node_launcher',
+            name='mk_node_launcher',
             output='screen'
         ),
+        # Node(
+        #     package='rust_ws',
+        #     executable='mission_launcher',
+        #     name='mission_launcher',
+        #     output='screen'
+        # ),
         
         # Lane Following Node for camera-based driving
         Node(

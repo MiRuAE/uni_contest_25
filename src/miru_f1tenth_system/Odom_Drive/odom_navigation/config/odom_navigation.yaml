@@ -1,7 +1,7 @@
 odom_navigation_node:
   ros__parameters:
-    target_x: 2.00
-    target_y: 1.40
+    target_x: 1.70
+    target_y: 3.7
     goal_tolerance: 0.05
     servo_min: 0.1018
     servo_max: 0.8218

@@ -87,9 +87,9 @@ class LaneFollowingNode : public rclcpp::Node
         cap_.set(cv::CAP_PROP_FRAME_WIDTH, camera_frame_width);
         cap_.set(cv::CAP_PROP_FRAME_HEIGHT, camera_frame_height);
         cap_.set(cv::CAP_PROP_FPS, camera_fps);
-        cap_.set(cv::CAP_PROP_AUTO_EXPOSURE, 1);
-        cap_.set(cv::CAP_PROP_EXPOSURE, camera_exposure);
-        cap_.set(cv::CAP_PROP_BRIGHTNESS, camera_brightness);
+        // cap_.set(cv::CAP_PROP_AUTO_EXPOSURE, 1);
+        // cap_.set(cv::CAP_PROP_EXPOSURE, camera_exposure);
+        // cap_.set(cv::CAP_PROP_BRIGHTNESS, camera_brightness);
 
         std::cout << "Camera settings: " << cap_.get(cv::CAP_PROP_FRAME_WIDTH)
             << "x" << cap_.get(cv::CAP_PROP_FRAME_HEIGHT)
