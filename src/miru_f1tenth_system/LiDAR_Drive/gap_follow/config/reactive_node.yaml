@@ -1,0 +1,8 @@
+reactive_node:
+  ros__parameters:
+    car_width: 0.5
+    safe_distance: 0.25
+    max_bubble_points: 850
+    left_wing_angle: 1.16355   # = M_PI / 2.7
+    right_wing_angle: -1.16355
+    smooth_filter_window: 9

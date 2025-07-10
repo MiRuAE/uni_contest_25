@@ -1,0 +1,63 @@
+lane_following_node:
+  ros__parameters:
+    camera_index: 0
+    Kp: 0.005
+    Ki: 0.0
+    Kd: 0.0
+    gaus_blur_size: 5
+    thresh: 50
+    blockSize: 11
+    C: 10
+    canny_inf: 50
+    canny_sup: 150
+    hough_threshold: 50
+    hough_inf_pixel: 50
+    hough_pixel_gap: 10
+    slope_threshold: 0.3
+    camera_frame_width: 640
+    camera_frame_height: 360
+    camera_fps: 30
+    camera_exposure: 1
+    camera_brightness: 128
+    speed_sigmoid_k: 1.0
+    speed_sigmoid_x0: 3.0
+    speed_base: 1.5
+    speed_reduction: 0.9
+
+
+reactive_node:
+  ros__parameters:
+    car_width: 0.5
+    safe_distance: 0.25
+    max_bubble_points: 850
+    left_wing_angle: 1.16355   # = M_PI / 2.7
+    right_wing_angle: -1.16355
+    smooth_filter_window: 9
+    
+
+
+vesc_to_odom_with_ekf_node:
+  ros__parameters:
+    
+
+
+odom_navigation_node:
+  ros__parameters:
+    target_x: 2.00
+    target_y: -1.40
+    goal_tolerance: 0.05
+    servo_min: 0.1018
+    servo_max: 0.8218
+    steering_angle_to_servo_gain: -0.9
+    steering_angle_to_servo_offset: 0.4618
+    lookahead_distance: 0.5
+    wheelbase: 0.33
+    kp_pid: 0.0
+    ki_pid: 0.0
+    kd_pid: 0.0
+    kp_speed_pid: 0.5
+    ki_speed_pid: 0.0
+    kd_speed_pid: 0.0
+    decel_distance: 0.5
+    max_speed: 2.5
+    min_speed: 0.5
