@@ -2,8 +2,8 @@ lane_following_node:
   ros__parameters:
       camera_index: 0
       Kp: 0.007
-      Ki: 0.0
-      Kd: 0.0015
+      Ki: 0.000017
+      Kd: 0.02
       gaus_blur_size: 5
       thresh: 100
       blockSize: 11
