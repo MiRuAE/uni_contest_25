@@ -258,14 +258,14 @@ class LaneFollowingNode : public rclcpp::Node
 
 
 
-    double speed_control(double slope)
-    {
-        double sigmoid = 1.0 / (1.0 + std::exp(speed_sigmoid_k_ * (slope - speed_sigmoid_x0_)));
+    double speed_control(double slope) {
+        double slope_abs = abs(slope);
+        double k = 5.0;     
+        double x0 = M_PI / 4;    
+        double sigmoid = 1.0 / (1.0 + std::exp(k * (slope - x0)));
         double speed = speed_base_ - speed_reduction_ * sigmoid;
         return speed;
     }
-
-
 
     std::pair<std::vector<cv::Vec4i>, std::vector<cv::Vec4i>> separateLine(const std::vector<cv::Vec4i> &lines,
 
@@ -611,39 +611,22 @@ class LaneFollowingNode : public rclcpp::Node
 
 
 
-        double max_slope = 30.0;
-
-
-
-        // roi_v slope
-
-        if (!left_lines_v.empty() && !right_lines_v.empty())
-
-        {
-
-            max_slope = 2 / (left_avg_v.first + right_avg_v.first);
-
+        double offset_radian = 0;
+        double max_slope = 0;
+        double slope = 0;
+        //roi_v slope
+        if (!left_lines_v.empty() && !right_lines_v.empty()) {
+        max_slope = 2 / (left_avg_v.first + right_avg_v.first);
+        slope = atan(max_slope);
+        } else if (!left_lines_v.empty()) {
+        max_slope = std::abs(left_avg_v.first);
+        slope = atan(max_slope);
+        } else if (!right_lines_v.empty()) {
+        max_slope = std::abs(right_avg_v.first);
+        slope = atan(max_slope);
+        } else {
+        slope = offset_radian;
         }
-
-        else if (!left_lines_v.empty())
-
-        {
-
-            max_slope = std::abs(left_avg_v.first);
-
-        }
-
-        else if (!right_lines_v.empty())
-
-        {
-
-            max_slope = std::abs(right_avg_v.first);
-
-        }
-
-
-
-        RCLCPP_INFO(this->get_logger(), "%0.5f", max_slope);
 
 
 

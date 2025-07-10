@@ -20,5 +20,7 @@ ros2 launch f1tenth_stack bringup_launch.py
  ros2 launch launcher_pkg mk_launch.py
 ```
 
-
+### Camera Exposure setup
+#### Complete bright sunlight setup
+v4l2-ctl -d /dev/video0 -c auto_exposure=1,exposure_time_absolute=3,gain=5,white_balance_automatic=0,white_balance_temperature=5500,backlight_compensation=0
 
